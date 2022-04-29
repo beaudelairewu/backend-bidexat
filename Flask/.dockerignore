@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+Dockerfile
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+README.md
+
+.pytest_cache

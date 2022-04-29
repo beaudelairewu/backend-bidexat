@@ -1,0 +1,11 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+best.pt
+TEMPORARY2.pt
+backend-env
+bidex-c1983-firebase-adminsdk.json
