@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bidex
+spec:
+  type: LoadBalancer
+  selector:
+    app: bidex
+  ports:
+  - port: 80
+    targetPort: 8080

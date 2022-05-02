@@ -1,4 +1,8 @@
 __pycache__
+img_cache/inputfolder/*
+img_cache/outputfolder/*
+
+__pycache__/*
 *.pyc
 *.pyo
 *.pyd
@@ -12,7 +16,5 @@ Dockerfile
 
 README.md
 
-.pytest_cache
 deployment.yaml
 service.yaml
-test2.py

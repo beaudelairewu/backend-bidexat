@@ -1,0 +1,24 @@
+# This file configures the hello-world app which serves public web traffic.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bidexworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker1
+        # Replace $GCLOUD_PROJECT with your project ID
+        image: us-east1-docker.pkg.dev/bidex-atl/bidex-repo/bidex-worker:ver1
+
+        #gcr.io/beam-personals/bidexflask1:latest
+        # This app listens on port 8080 for web traffic by default.
+
+ 

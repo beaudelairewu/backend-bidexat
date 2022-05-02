@@ -1,9 +1,10 @@
-# os import
-import os
+##############OS STUFF#############################
+import os, os.path, shutil
+from os import listdir
+from os.path import isfile, join
 import time
 from pathlib import Path
-
-# ai import
+##############AI STUFF#############################
 import cv2
 import torch
 from numpy import random
@@ -14,59 +15,30 @@ from utils.general import (
     xyxy2xywh, strip_optimizer, set_logging)
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
+#####################################################
+from firebase_helper import pullImages, saveToStorage
 
-# firebase import
-from firebase_admin import credentials, firestore, storage, initialize_app
-import uuid
-import random
-import string
-
-#folders
+#################FOLDERS##############################
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+weight_path = os.path.join(APP_ROOT, 'models/TEMPORARY2.pt')
+#####################################################
+ # description
+    # this function return list of number of detected ov in detection order
+    # source = source image location
+    # output = image output location
+    #weights = model location
 
-#setting 
-weight_path = os.path.join(APP_ROOT, 'models/best.pt')
-cred_path = os.path.join(APP_ROOT, "bidex-c1983-firebase-adminsdk.json")
-img_size = 640
-conf_thres = 0.7
-iou_thres = 0.4
-#source = "/worker/img_cache/inputfolder/"
-source = '/Users/beau/dev/bidex_at/backend-bidexat/img_cache/inputfolder'
-output = '/Users/beau/dev/bidex_at/backend-bidexat/img_cache/outputfolder'
+def rundetect(clusterID, weights=weight_path, conf_thres=0.7, iou_thres=0.4):
 
+    try:
+        # source = os.path.join(APP_ROOT, f"/img_cache/inputfolder/{subCluster}/")
+        # output = os.path.join(APP_ROOT, f"/img_cache/outputfolder/{subCluster}/")
 
-#initial
-cred = credentials.Certificate(cred_path)
-initialize_app(cred, {'storageBucket': 'bidex-c1983.appspot.com'})
-bucket = storage.bucket()
-db = firestore.client()
+        source = f'/worker/img_cache/inputfolder/{subCluster}/'
+        output = f'/worker/img_cache/outputfolder/{subCluster}/'
 
-def fuckit(userID, patientID, slideID):
-    # 1.1 get image_name_list from firestore
-    imagesRef = db.collection(u'users').document(userID).collection(u'patients').document(patientID).collection(u'slides').document(slideID).collection(u'images')
-    deleted_query = imagesRef.where(u'deleted','==',False)
-    processed_query = deleted_query.where(u'processed','==',False)
-    docs = processed_query.get()
-    image_name_list = []
-    for doc in docs:
-        image_name_list.append(doc.to_dict()['name'])
-    print(f'found {len(image_name_list)} images')
+        pullImages(pid=pid, cluster=cluster, subCluster=subCluster)
 
-    # 1.2 create directory based on clusterIDs
-    clusterID =  ''.join(random.choices(string.ascii_uppercase+string.ascii_lowercase + string.digits, k=12))
-    direc = f'/Users/beau/dev/bidex_at/backend-bidexat/{clusterID}'
-    if os.path.exists(direc):
-        pass
-    os.makedirs(direc)
-    # 1.3 fetch actual files
-    for fileName in image_name_list:
-        print('start fetching')
-        blob = bucket.blob(f'input/{userID}/{patientID}/{slideID}/{fileName}')
-        savePath = os.path.joing(source, clusterID, fileName)
-        blob.download_to_filename(savePath)
-        print('fetch finished')
-
-        #2.1
         print('start detection')
         results = []
         # Initialize
@@ -74,8 +46,8 @@ def fuckit(userID, patientID, slideID):
         device = select_device("")
         half = device.type != 'cpu'  # half precision only supported on CUDA
 
-        models =  attempt_load(weight_path, map_location=device) # load FP32 models
-        imgsz = check_img_size(img_size, s=models.stride.max())  # check img_size (default value is 640)
+        models =  attempt_load(weights, map_location=device) # load FP32 models
+        imgsz = check_img_size(size, s=models.stride.max())  # check img_size (default value is 640)
         if half:
             models.half()  # to FP16
 
@@ -142,3 +114,18 @@ def fuckit(userID, patientID, slideID):
             print('Results saved to %s' % Path(output))
         print("used time:",int((time.time() - time1)*100)/100,"s")
         print(len(results))
+
+
+        #UPLOAD TO FIREBASE OUTPUT IMAGES HERE
+        saveToStorage(pid=pid,cluster=cluster,subCluster=subCluster, result=results)
+
+        #DELETE INPUT/OUTPUT IMAGES HERE
+        shutil.rmtree(source)
+        shutil.rmtree(output)
+
+    except:
+        #DELETE INPUT/OUTPUT IMAGES HERE
+        shutil.rmtree(source)
+        shutil.rmtree(output)
+
+    return results
