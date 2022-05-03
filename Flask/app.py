@@ -30,7 +30,7 @@ def detectov():
         slideID = request.form['slideID']
         image_name_list = request.form['image_name_list']
         with Connection(redis_client):
-            job = q.enqueue('firebase_helper.getData', userID=userID, patientID=patientID, slideID=slideID, image_name_list=image_name_list)
+            job = q.enqueue('fb_helper.fullcycle', userID=userID, patientID=patientID, slideID=slideID, image_name_list=image_name_list)
             jobid = job.get_id()
 
         return jobid

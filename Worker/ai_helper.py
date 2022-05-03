@@ -41,16 +41,22 @@ visualize=False,  # visualize features
 update=False,  # update all models
 project=ROOT / 'runs/detect',  # save results to project/name
 name='exp',  # save results to project/name
-exist_ok=False,  # existing project/name ok, do not increment
+exist_ok=True,  # existing project/name ok, do not increment
 line_thickness=3,  # bounding box thickness (pixels)
 hide_labels=False,  # hide labels
 hide_conf=False,  # hide confidences
 half=False,  # use FP16 half-precision inference
 dnn=False,  # use OpenCV DNN for ONNX inference
 
+inputFolder = '/worker/img_cache/inputfolder/'
+outputFolder = '/worker/img_cache/outputfolder/'
 
 @torch.no_grad()
-def run():
+def rundetect(clusterID):
+
+    source = os.path.join(inputFolder, clusterID)
+    project = outputFolder
+    name = clusterID
 
     ovcount = {}
 
@@ -189,6 +195,7 @@ def run():
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
     
-    
+    print(ovcount)
+    return ovcount
 
 
