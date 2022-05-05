@@ -16,7 +16,7 @@ spec:
       containers:
       - name: bidexflask1
         # Replace $GCLOUD_PROJECT with your project ID
-        image: us-east1-docker.pkg.dev/bidex-atl/bidex-repo/bidex-flask:ver8
+        image: us-east1-docker.pkg.dev/bidex-atl/bidex-repo/bidex-flask:ver14
 
         #gcr.io/beam-personals/bidexflask1:latest
         # This app listens on port 8080 for web traffic by default.

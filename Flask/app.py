@@ -29,6 +29,7 @@ def detectov():
         patientID = request.form['patientID']
         slideID = request.form['slideID']
         image_name_list = request.form['image_name_list']
+        image_name_list = image_name_list.split(',')
         with Connection(redis_client):
             job = q.enqueue('fb_helper.fullcycle', userID=userID, patientID=patientID, slideID=slideID, image_name_list=image_name_list)
             jobid = job.get_id()
@@ -38,12 +39,11 @@ def detectov():
 @app.route('/testing', methods=["POST"])
 def testing():
     if request.method == "POST":
-        mes = request.form['mes']
-        with Connection(redis_client):
-            job = q.enqueue('asdf.showmes', mes)
-            jobid = job.get_id()
+        image_name_list = request.form.getlist('image_name_list')
+        print(type(image_name_list))
+        print(image_name_list)
 
-        return jobid
+        return "ye"
 
 @app.route("/result/<job_id>")
 def get_result(job_id):

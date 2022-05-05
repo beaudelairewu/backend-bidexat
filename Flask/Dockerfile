@@ -4,6 +4,7 @@ FROM python:3.8.3
 
 # Copy local code to the container image.
 ENV APP_HOME /app
+ENV PYTHONUNBUFFERED=1
 WORKDIR $APP_HOME
 COPY . ./
 RUN pip install -r requirements.txt
