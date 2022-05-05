@@ -16,7 +16,7 @@ spec:
       containers:
       - name: worker1
         # Replace $GCLOUD_PROJECT with your project ID
-        image: us-east1-docker.pkg.dev/bidex-atl/bidex-repo/bidex-worker:ver1
+        image: us-east1-docker.pkg.dev/bidex-atl/bidex-repo/bidex-worker:ver13
 
         #gcr.io/beam-personals/bidexflask1:latest
         # This app listens on port 8080 for web traffic by default.

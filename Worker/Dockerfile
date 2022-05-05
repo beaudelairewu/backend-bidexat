@@ -1,7 +1,11 @@
 FROM python:3.8.3
 WORKDIR /worker
 
+ENV APP_HOME /worker
 ENV DEBIAN_FRONTEND noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH "${PYTHONPATH}/worker"
+
 RUN apt-get update -y
 RUN apt install libgl1-mesa-glx -y
 RUN apt-get install 'ffmpeg'\
